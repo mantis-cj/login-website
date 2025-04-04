@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login & Registrierung</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(120deg, #2980b9, #6dd5fa);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      flex-direction: column;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .form-box {
+      background: #fff;
+      padding: 40px;
+      border-radius: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 350px;
+      position: absolute;
+      display: none; /* Standardmäßig unsichtbar */
+      opacity: 0;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .form-box.visible {
+      display: block; /* Sichtbar machen */
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .form-box h2 {
+      margin-bottom: 20px;
+      color: #333;
+      font-size: 24px;
+      text-align: center;
+    }
+
+    .form-box input {
+      width: 100%;
+      padding: 12px;
+      margin: 12px 0;
+      border: 2px solid #ccc;
+      border-radius: 25px;
+      font-size: 16px;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-box input:focus {
+      border-color: #3498db;
+      outline: none;
+    }
+
+    .form-box button {
+      width: 100%;
+      padding: 12px;
+      background-color: #3498db;
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 25px;
+      cursor: pointer;
+      margin-top: 15px;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .form-box button:hover {
+      background-color: #2980b9;
+      transform: scale(1.05);
+    }
+
+    .form-box .link p {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    .form-box .link a {
+      color: #3498db;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .form-box .link a:hover {
+      color: #2980b9;
+    }
+
+    /* Menü oben fixiert */
+    .menu {
+      width: 100%;
+      background: #333;
+      color: white;
+      display: flex;
+      justify-content: space-around;
+      padding: 15px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+      border-radius: 0 0 25px 25px;
+      transition: background 0.3s ease;
+    }
+
+    .menu a {
+      color: white;
+      text-decoration: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 25px;
+      transition: background 0.3s ease;
+    }
+
+    .menu a:hover {
+      background-color: #2980b9;
+    }
+
+    /* Inhalt */
+    .content {
+      padding: 20px;
+      text-align: center;
+      margin-top: 70px; /* Abstand nach oben, damit es nicht unter dem Menü verschwindet */
+    }
+
+  </style>
+</head>
+<body>
+  <div class="form-box visible" id="login-box">
+    <h2>Login</h2>
+    <input type="text" id="login-username" placeholder="Benutzername" />
+    <input type="password" id="login-password" placeholder="Passwort" />
+    <button onclick="login()">Login</button>
+    <div class="link">
+      <p>Noch kein Konto? <a onclick="showRegister()">Registrieren</a></p>
+      <p><a onclick="showReset()">Passwort vergessen?</a></p>
+    </div>
+  </div>
+
+  <div class="form-box" id="register-box">
+    <h2>Registrieren</h2>
+    <input type="text" id="register-username" placeholder="Benutzername" />
+    <input type="password" id="register-password" placeholder="Passwort" />
+    <button onclick="register()">Registrieren</button>
+    <div class="link">
+      <p>Bereits ein Konto? <a onclick="showLogin()">Login</a></p>
+    </div>
+  </div>
+
+  <div class="form-box" id="reset-box">
+    <h2>Passwort zurücksetzen</h2>
+    <input type="text" id="reset-username" placeholder="Benutzername" />
+    <input type="password" id="reset-password" placeholder="Neues Passwort" />
+    <button onclick="resetPassword()">Zurücksetzen</button>
+    <div class="link">
+      <p><a onclick="showLogin()">Zurück zum Login</a></p>
+    </div>
+  </div>
+
+  <script>
+    let currentUser = null;
+
+    function showLogin() {
+      toggleForms("login-box");
+    }
+
+    function showRegister() {
+      toggleForms("register-box");
+    }
+
+    function showReset() {
+      toggleForms("reset-box");
+    }
+
+    function toggleForms(showId) {
+      document.querySelectorAll(".form-box").forEach(form => {
+        if (form.id === showId) {
+          form.classList.add("visible");
+          form.style.display = "block"; // Zeige das Formular an
+        } else {
+          form.classList.remove("visible");
+          form.style.display = "none"; // Verstecke das Formular
+        }
+      });
+    }
+
+    function register() {
+      const username = document.getElementById("register-username").value;
+      const password = document.getElementById("register-password").value;
+      if (localStorage.getItem(username)) {
+        alert("Benutzer existiert bereits!");
+      } else {
+        localStorage.setItem(username, password);
+        alert("Registrierung erfolgreich!");
+        showLogin();
+      }
+    }
+
+    function login() {
+      const username = document.getElementById("login-username").value;
+      const password = document.getElementById("login-password").value;
+      if (localStorage.getItem(username) === password) {
+        currentUser = username;
+        document.body.innerHTML = `
+          <div class="menu">
+            <a href="#" onclick='home()'>Home</a>
+            <a href="#" onclick="showSecurity()">Security</a>
+            <a href="https://temp-mail.org/de/" target="_blank">Email</a>
+          </div>
+          <div class="content">
+            <h2>Willkommen, ${username}</h2>
+            <div id="home-content"></div>
+          </div>
+        `;
+      } else {
+        alert("Benutzername oder Passwort falsch!");
+      }
+    }
+
+    function changePassword(username) {
+      const oldPassword = document.getElementById("old-password").value;
+      const newPassword = document.getElementById("new-password").value;
+      if (localStorage.getItem(username) === oldPassword) {
+        localStorage.setItem(username, newPassword);
+        alert("Passwort erfolgreich geändert!");
+      } else {
+        alert("Altes Passwort ist falsch!");
+      }
+    }
+
+    function resetPassword() {
+      const username = document.getElementById("reset-username").value;
+      const newPassword = document.getElementById("reset-password").value;
+      if (localStorage.getItem(username)) {
+        localStorage.setItem(username, newPassword);
+        alert("Passwort wurde geändert!");
+        showLogin();
+      } else {
+        alert("Benutzername nicht gefunden!");
+      }
+    }
+
+    function home() {
+      document.querySelector('.content').innerHTML = `
+        <button onclick="logout()">Logout</button>
+      `;
+    }
+
+    function showSecurity() {
+      document.querySelector('.content').innerHTML = `
+        <h2>Passwort ändern</h2>
+        <input type="password" id="old-password" placeholder="Altes Passwort" />
+        <input type="password" id="new-password" placeholder="Neues Passwort" />
+        <button onclick="changePassword('${currentUser}')">Passwort ändern</button>
+      `;
+    }
+
+    function logout() {
+      currentUser = null;
+      alert("Erfolgreich abgemeldet!");
+      location.reload();
+    }
+  </script>
+</body>
+</html>
